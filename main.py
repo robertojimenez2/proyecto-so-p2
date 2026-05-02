@@ -150,3 +150,144 @@ def simular_memoria(datos: PeticionMemoria):
                 memoria_compactada.append(bloque)
 
     return {"error": None, "memoria": memoria_compactada}
+
+
+# --- AÑADIR AL FINAL DE main.py ---
+
+class AccionDeadlock(BaseModel):
+    hilo: str    # "T1" o "T2"
+    tipo: str    # "solicitar" o "liberar"
+    recurso: str # "R1" (Impresora) o "R2" (Disco)
+
+class EstadoDeadlock(BaseModel):
+    asignados: dict # Ej: {"R1": "T1", "R2": None} (Quién es dueño de qué)
+    esperando: dict # Ej: {"T1": "R2", "T2": None} (Quién espera qué)
+    accion: Optional[AccionDeadlock] = None
+
+@app.post("/simular/hilos/deadlock")
+def simular_deadlock(estado: EstadoDeadlock):
+    asig = estado.asignados.copy()
+    esp = estado.esperando.copy()
+    mensaje = "Sistema en funcionamiento normal."
+
+    # 1. Procesar la acción del usuario
+    if estado.accion:
+        h = estado.accion.hilo
+        r = estado.accion.recurso
+        t = estado.accion.tipo
+
+        if t == "solicitar":
+            if asig[r] is None:
+                asig[r] = h # Se lo damos
+                esp[h] = None # Ya no está esperando
+                mensaje = f"✅ {h} ha adquirido {r}."
+            elif asig[r] == h:
+                mensaje = f"⚠️ {h} ya tiene {r}."
+            else:
+                esp[h] = r # El recurso lo tiene el otro hilo, toca esperar
+                mensaje = f"⏳ {h} se ha bloqueado esperando por {r}."
+        
+        elif t == "liberar":
+            if asig[r] == h:
+                asig[r] = None
+                mensaje = f"♻️ {h} ha liberado {r}."
+                
+                # Revisar si el otro hilo estaba esperando este recurso para dárselo
+                otro_hilo = "T2" if h == "T1" else "T1"
+                if esp[otro_hilo] == r:
+                    asig[r] = otro_hilo
+                    esp[otro_hilo] = None
+                    mensaje += f" ➡️ {otro_hilo} despertó y adquirió {r}."
+            else:
+                mensaje = f"❌ {h} no puede liberar {r} porque no es el dueño."
+
+    # 2. Detectar Deadlock (Abrazo Mortal)
+    deadlock = False
+    # ¿T1 está esperando algo que tiene T2, y T2 está esperando algo que tiene T1?
+    if esp["T1"] and esp["T2"]:
+        dueño_recurso_que_espera_t1 = asig[esp["T1"]]
+        dueño_recurso_que_espera_t2 = asig[esp["T2"]]
+        
+        if dueño_recurso_que_espera_t1 == "T2" and dueño_recurso_que_espera_t2 == "T1":
+            deadlock = True
+            mensaje = "💀 ¡DEADLOCK DETECTADO! Abrazo Mortal. Ningún hilo puede avanzar."
+
+    return {
+        "asignados": asig,
+        "esperando": esp,
+        "deadlock": deadlock,
+        "mensaje": mensaje
+    }
+
+
+# --- AÑADIR AL FINAL DE main.py ---
+
+class AccionProdCons(BaseModel):
+    tipo: str # "producir" o "consumir"
+
+class EstadoProdCons(BaseModel):
+    buffer: List[Optional[str]]
+    capacidad: int
+    estado_productor: str # "activo" o "durmiendo"
+    estado_consumidor: str # "activo" o "durmiendo"
+    accion: Optional[AccionProdCons] = None
+
+@app.post("/simular/hilos/productor_consumidor")
+def simular_prod_cons(estado: EstadoProdCons):
+    buffer = estado.buffer.copy()
+    prod_estado = estado.estado_productor
+    cons_estado = estado.estado_consumidor
+    mensaje = "Sistema en espera."
+
+    # Contar cuántos paquetes reales hay en la cinta
+    elementos_actuales = sum(1 for x in buffer if x is not None)
+
+    if estado.accion:
+        if estado.accion.tipo == "producir":
+            if elementos_actuales < estado.capacidad:
+                # Encontrar el primer espacio vacío de izquierda a derecha
+                indice_vacio = buffer.index(None)
+                buffer[indice_vacio] = "📦"
+                elementos_actuales += 1
+                mensaje = "🏭 Productor generó un paquete."
+                
+                # Si el consumidor estaba dormido porque no había nada, ¡despiértalo!
+                if cons_estado == "durmiendo":
+                    cons_estado = "activo"
+                    mensaje += " 🔔 ¡Despertando al Consumidor!"
+
+                # Si con este paquete se llenó la cinta, el productor se duerme
+                if elementos_actuales == estado.capacidad:
+                    prod_estado = "durmiendo"
+                    mensaje += " 🛑 Búfer LLENO. Productor se va a dormir."
+            else:
+                mensaje = "⚠️ Error: El Productor intentó trabajar pero el búfer está lleno."
+
+        elif estado.accion.tipo == "consumir":
+            if elementos_actuales > 0:
+                # FIFO: Quitamos el paquete más viejo (el índice 0)
+                # Al hacer pop(0), todo se recorre a la izquierda. Luego agregamos un None al final.
+                buffer.pop(0)
+                buffer.append(None)
+                elementos_actuales -= 1
+                mensaje = "🛒 Consumidor retiró un paquete."
+                
+                # Si el productor estaba dormido porque estaba lleno, ¡despiértalo!
+                if prod_estado == "durmiendo":
+                    prod_estado = "activo"
+                    mensaje += " 🔔 ¡Despertando al Productor!"
+
+                # Si con este retiro se vació la cinta, el consumidor se duerme
+                if elementos_actuales == 0:
+                    cons_estado = "durmiendo"
+                    mensaje += " 🪫 Búfer VACÍO. Consumidor se va a dormir."
+            else:
+                mensaje = "⚠️ Error: El Consumidor intentó trabajar pero el búfer está vacío."
+
+    return {
+        "buffer": buffer,
+        "capacidad": estado.capacidad,
+        "estado_productor": prod_estado,
+        "estado_consumidor": cons_estado,
+        "mensaje": mensaje
+    }
