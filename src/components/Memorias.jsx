@@ -96,6 +96,11 @@ function Memorias() {
       </div>
       <h3>Pequeña demostración</h3>
       <SimuladorMemoria />
+      <p>¿Qué pasa aquí?</p>
+      <p>
+        vemos como el simulador asigna la memoria de la tarea acorde al ajuste
+        de nuestra eleccion, solo considerando la memoria fisica.
+      </p>
     </div>
   );
 }
