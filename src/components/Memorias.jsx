@@ -1,4 +1,5 @@
 import React from "react";
+import SimuladorMemoria from "./SimuladorMemoria";
 
 function Memorias() {
   return (
@@ -94,6 +95,7 @@ function Memorias() {
         </p>
       </div>
       <h3>Pequeña demostración</h3>
+      <SimuladorMemoria />
     </div>
   );
 }
