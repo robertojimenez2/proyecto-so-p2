@@ -15,6 +15,8 @@ function SimuladorDisco() {
   const [mensaje, setMensaje] = useState("Disco formateado y listo.");
   const [esError, setEsError] = useState(false);
 
+  const backendURL = "https://proyecto-so-p2.onrender.com";
+
   const [nuevoArchivo, setNuevoArchivo] = useState({
     id: "",
     tamano: "",
@@ -42,7 +44,7 @@ function SimuladorDisco() {
 
   const comunicarseConPython = async (payload) => {
     try {
-      const respuesta = await fetch("http://localhost:8000/simular/disco", {
+      const respuesta = await fetch(`${backendUrl}/simular/disco`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),

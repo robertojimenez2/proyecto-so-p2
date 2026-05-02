@@ -13,6 +13,7 @@ function SimuladorProdCons() {
   };
 
   const [estado, setEstado] = useState(estadoInicial);
+  const backendUrl = "https://proyecto-so-p2.onrender.com";
 
   const enviarAccion = async (tipoAccion) => {
     try {
@@ -25,7 +26,7 @@ function SimuladorProdCons() {
       };
 
       const respuesta = await fetch(
-        "http://localhost:8000/simular/hilos/productor_consumidor",
+        `${backendUrl}/simular/hilos/productor_consumidor`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },

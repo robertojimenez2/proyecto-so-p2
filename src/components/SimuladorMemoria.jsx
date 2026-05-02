@@ -11,10 +11,11 @@ function SimuladorMemoria() {
   const [algoritmo, setAlgoritmo] = useState("first");
   const [nuevoProceso, setNuevoProceso] = useState({ id: "", tamano: "" });
   const [mensajeError, setMensajeError] = useState(null);
+  const backendUrl = "https://proyecto-so-p2.onrender.com";
 
   const comunicarseConPython = async (payload) => {
     try {
-      const respuesta = await fetch("http://localhost:8000/simular/memoria", {
+      const respuesta = await fetch(`${backendUrl}/simular/memoria`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),

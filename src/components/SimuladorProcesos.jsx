@@ -19,6 +19,8 @@ function SimuladorOS() {
     setNuevoProceso({ ...nuevoProceso, [e.target.name]: e.target.value });
   };
 
+  const backendUrl = "https://proyecto-so-p2.onrender.com";
+
   const agregarProceso = (e) => {
     e.preventDefault();
     if (!nuevoProceso.id || !nuevoProceso.rafaga) return;
@@ -37,7 +39,7 @@ function SimuladorOS() {
     const payload = { ...estadoSistema, accion_usuario: accionOpcional };
 
     try {
-      const respuesta = await fetch("http://localhost:8000/simular/paso", {
+      const respuesta = await fetch(`${backendUrl}/simular/paso`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),

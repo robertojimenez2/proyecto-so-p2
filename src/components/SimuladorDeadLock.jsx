@@ -6,6 +6,8 @@ function SimuladorDeadlock() {
     esperando: { T1: null, T2: null },
   };
 
+  const backendURL = "https://proyecto-so-p2.onrender.com";
+
   const [estado, setEstado] = useState(estadoInicial);
   const [deadlock, setDeadlock] = useState(false);
   const [mensaje, setMensaje] = useState(
@@ -20,14 +22,11 @@ function SimuladorDeadlock() {
         accion: { hilo, tipo, recurso },
       };
 
-      const respuesta = await fetch(
-        "http://localhost:8000/simular/hilos/deadlock",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload),
-        },
-      );
+      const respuesta = await fetch(`${backendURL}/simular/hilos/deadlock`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
 
       const datos = await respuesta.json();
       setEstado({ asignados: datos.asignados, esperando: datos.esperando });

@@ -27,6 +27,7 @@ function SimuladorDirectorios() {
   };
 
   const nodoActual = encontrarNodo(arbol, carpetaActualId);
+  const backendUrl = "https://proyecto-so-p2.onrender.com";
 
   const ejecutarAccion = async (accion, tipo = null, idProd = null) => {
     try {
@@ -39,14 +40,11 @@ function SimuladorDirectorios() {
         objetivo_id: idProd,
       };
 
-      const respuesta = await fetch(
-        "http://localhost:8000/simular/directorios",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload),
-        },
-      );
+      const respuesta = await fetch(`${backendUrl}/simular/directorios`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
 
       const datos = await respuesta.json();
       setArbol(datos.arbol);
