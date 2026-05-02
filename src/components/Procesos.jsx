@@ -230,10 +230,10 @@ function Procesos() {
       </div>
       <SimuladorOS />
       <p>
-        El diagrama de Gantt muestra la secuencia de ejecución de los procesos a
-        lo largo del tiempo, indicando cuándo cada proceso está en ejecución,
-        listo o bloqueado. Esto ayuda a visualizar cómo el sistema operativo
-        gestiona los procesos y asigna la CPU.
+        El panel de control nos muestra como va el estado de un proceso, podemos
+        jugar con ello y mandar un proceso a espera o a ejecucion, tambien
+        podemos crear nuevos procesos y eliminar los que ya no necesitemos, esto
+        es una simulacion de lo que hace el sistema operativo con los procesos.
       </p>
     </div>
   );
