@@ -291,3 +291,108 @@ def simular_prod_cons(estado: EstadoProdCons):
         "estado_consumidor": cons_estado,
         "mensaje": mensaje
     }
+
+# --- AÑADIR AL FINAL DE main.py ---
+
+class BloqueDisco(BaseModel):
+    id_archivo: Optional[str] = None
+    libre: bool = True
+    tipo: Optional[str] = None # "datos" o "indice"
+    orden: Optional[int] = None # Para saber el fragmento (1, 2, 3...)
+
+class PeticionDisco(BaseModel):
+    disco: List[BloqueDisco]
+    accion: str # "crear" o "eliminar"
+    archivo_id: Optional[str] = None
+    tamano: Optional[int] = None # Cantidad de bloques que ocupa
+    metodo: Optional[str] = None # "contigua", "enlazada", "indexada"
+
+@app.post("/simular/disco")
+def simular_disco(peticion: PeticionDisco):
+    # Creamos una copia de los bloques para modificarlos
+    disco_actual = [b.copy() for b in peticion.disco]
+    mensaje = "Operación exitosa."
+    error = False
+
+    # 1. ELIMINAR UN ARCHIVO
+    if peticion.accion == "eliminar":
+        for b in disco_actual:
+            if b.id_archivo == peticion.archivo_id:
+                b.id_archivo = None
+                b.libre = True
+                b.tipo = None
+                b.orden = None
+        mensaje = f"♻️ Archivo '{peticion.archivo_id}' eliminado y bloques liberados."
+
+    # 2. CREAR UN ARCHIVO
+    elif peticion.accion == "crear":
+        tam_req = peticion.tamano
+        metodo = peticion.metodo
+        id_arch = peticion.archivo_id
+
+        # Validar si el nombre ya existe
+        if any(b.id_archivo == id_arch for b in disco_actual):
+            return {"disco": disco_actual, "mensaje": f"⚠️ El archivo '{id_arch}' ya existe.", "error": True}
+
+        # --- MÉTODO CONTIGUO ---
+        if metodo == "contigua":
+            encontrado = False
+            # Buscar 'tam_req' bloques libres que estén juntos
+            for i in range(len(disco_actual) - tam_req + 1):
+                if all(disco_actual[i+j].libre for j in range(tam_req)):
+                    # Ocupar los bloques
+                    for j in range(tam_req):
+                        disco_actual[i+j].id_archivo = id_arch
+                        disco_actual[i+j].libre = False
+                        disco_actual[i+j].tipo = "datos"
+                        disco_actual[i+j].orden = j + 1
+                    encontrado = True
+                    break
+            
+            if not encontrado:
+                error = True
+                mensaje = f"❌ Error (Fragmentación): No hay {tam_req} bloques juntos, aunque haya espacio libre."
+            else:
+                mensaje = f"💾 Archivo '{id_arch}' guardado de forma contigua."
+
+        # --- MÉTODO ENLAZADO ---
+        elif metodo == "enlazada":
+            libres = [i for i, b in enumerate(disco_actual) if b.libre]
+            if len(libres) >= tam_req:
+                # Toma los primeros bloques libres que encuentre, no importa si están separados
+                for j in range(tam_req):
+                    idx = libres[j]
+                    disco_actual[idx].id_archivo = id_arch
+                    disco_actual[idx].libre = False
+                    disco_actual[idx].tipo = "datos"
+                    disco_actual[idx].orden = j + 1
+                mensaje = f"🔗 Archivo '{id_arch}' guardado mediante lista enlazada."
+            else:
+                error = True
+                mensaje = "❌ Error: Disco lleno, no hay suficientes bloques."
+
+        # --- MÉTODO INDEXADO ---
+        elif metodo == "indexada":
+            libres = [i for i, b in enumerate(disco_actual) if b.libre]
+            # Requiere 1 bloque extra para guardar la "tabla de índices"
+            if len(libres) >= tam_req + 1: 
+                # El primer bloque libre será el bloque índice
+                idx_indice = libres[0]
+                disco_actual[idx_indice].id_archivo = id_arch
+                disco_actual[idx_indice].libre = False
+                disco_actual[idx_indice].tipo = "indice"
+                disco_actual[idx_indice].orden = 0
+
+                # Los demás serán los datos reales
+                for j in range(1, tam_req + 1):
+                    idx_dato = libres[j]
+                    disco_actual[idx_dato].id_archivo = id_arch
+                    disco_actual[idx_dato].libre = False
+                    disco_actual[idx_dato].tipo = "datos"
+                    disco_actual[idx_dato].orden = j
+                mensaje = f"🗂️ Archivo '{id_arch}' guardado con un bloque índice maestro."
+            else:
+                error = True
+                mensaje = "❌ Error: No hay espacio suficiente (Recuerda que este método usa 1 bloque extra)."
+
+    return {"disco": disco_actual, "mensaje": mensaje, "error": error}

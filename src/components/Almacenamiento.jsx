@@ -1,4 +1,5 @@
 import React from "react";
+import SimuladorDisco from "./SimuladorDisco";
 
 function Almacenamiento() {
   return (
@@ -59,6 +60,8 @@ function Almacenamiento() {
           observa cómo se monta el volumen para ser accesible.
         </p>
       </div>
+      <h2>Demostración Interactiva: Asignacion de archivos en bloques</h2>
+      <SimuladorDisco />
     </div>
   );
 }
