@@ -58,7 +58,6 @@ def simular_paso(estado: EstadoSimulacion):
     return estado
 
 
-# --- AÑADIR AL FINAL DE main.py ---
 
 class BloqueMemoria(BaseModel):
     id_proceso: Optional[str] = None
@@ -152,8 +151,6 @@ def simular_memoria(datos: PeticionMemoria):
     return {"error": None, "memoria": memoria_compactada}
 
 
-# --- AÑADIR AL FINAL DE main.py ---
-
 class AccionDeadlock(BaseModel):
     hilo: str    # "T1" o "T2"
     tipo: str    # "solicitar" o "liberar"
@@ -220,7 +217,6 @@ def simular_deadlock(estado: EstadoDeadlock):
     }
 
 
-# --- AÑADIR AL FINAL DE main.py ---
 
 class AccionProdCons(BaseModel):
     tipo: str # "producir" o "consumir"
@@ -292,7 +288,6 @@ def simular_prod_cons(estado: EstadoProdCons):
         "mensaje": mensaje
     }
 
-# --- AÑADIR AL FINAL DE main.py ---
 
 class BloqueDisco(BaseModel):
     id_archivo: Optional[str] = None
@@ -397,7 +392,6 @@ def simular_disco(peticion: PeticionDisco):
 
     return {"disco": disco_actual, "mensaje": mensaje, "error": error}
 
-# --- AÑADIR AL FINAL DE main.py ---
 
 class ElementoFS(BaseModel):
     id: str
