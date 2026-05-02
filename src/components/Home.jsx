@@ -55,6 +55,7 @@ function Home() {
           <a
             href="https://ull-esit-sistemas-operativos.github.io/ssoo-apuntes/so2324/main.html"
             target="_blank"
+            rel="noopener noreferrer"
           >
             Para saber más
           </a>
