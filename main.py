@@ -396,3 +396,71 @@ def simular_disco(peticion: PeticionDisco):
                 mensaje = "❌ Error: No hay espacio suficiente (Recuerda que este método usa 1 bloque extra)."
 
     return {"disco": disco_actual, "mensaje": mensaje, "error": error}
+
+# --- AÑADIR AL FINAL DE main.py ---
+
+class ElementoFS(BaseModel):
+    id: str
+    nombre: str
+    tipo: str  # "carpeta" o "archivo"
+    hijos: Optional[List['ElementoFS']] = [] # Solo si es carpeta
+
+# Necesario para que Pydantic maneje la recursividad
+ElementoFS.update_forward_refs()
+
+class PeticionFS(BaseModel):
+    arbol: ElementoFS
+    padre_id: str
+    accion: str # "crear" o "eliminar"
+    nuevo_nombre: Optional[str] = None
+    nuevo_tipo: Optional[str] = None
+    objetivo_id: Optional[str] = None
+
+@app.post("/simular/directorios")
+def simular_directorios(peticion: PeticionFS):
+    arbol_nuevo = peticion.arbol.copy()
+    mensaje = ""
+    error = False
+
+    # Función auxiliar para buscar y modificar el nodo correcto en el árbol
+    def buscar_y_modificar(nodo: ElementoFS):
+        nonlocal mensaje, error
+        
+        # Si la acción es ELIMINAR y el hijo está aquí
+        if peticion.accion == "eliminar":
+            for i, hijo in enumerate(nodo.hijos):
+                if hijo.id == peticion.objetivo_id:
+                    nodo.hijos.pop(i)
+                    mensaje = f"🗑️ Se eliminó '{hijo.nombre}'."
+                    return True
+        
+        # Si este es el PADRE donde queremos CREAR
+        if nodo.id == peticion.padre_id:
+            if peticion.accion == "crear":
+                # REGLA DEL SO: No permitir nombres duplicados en el mismo nivel
+                if any(h.nombre == peticion.nuevo_nombre for h in nodo.hijos):
+                    error = True
+                    mensaje = f"❌ Error: Ya existe un(a) {peticion.nuevo_tipo} llamado '{peticion.nuevo_nombre}' en esta ubicación."
+                    return True
+                
+                nuevo = ElementoFS(
+                    id=str(uuid.uuid4())[:8], 
+                    nombre=peticion.nuevo_nombre, 
+                    tipo=peticion.nuevo_tipo,
+                    hijos=[]
+                )
+                nodo.hijos.append(nuevo)
+                mensaje = f"✅ '{peticion.nuevo_nombre}' creado con éxito."
+                return True
+        
+        # Si no es aquí, buscar en los hijos (recursividad)
+        for hijo in nodo.hijos:
+            if hijo.tipo == "carpeta":
+                if buscar_y_modificar(hijo):
+                    return True
+        return False
+
+    import uuid
+    buscar_y_modificar(arbol_nuevo)
+    
+    return {"arbol": arbol_nuevo, "mensaje": mensaje, "error": error}

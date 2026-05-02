@@ -1,4 +1,5 @@
 import React from "react";
+import SimuladorDirectorios from "./SimuladorDir";
 
 function Directorios() {
   return (
@@ -19,8 +20,8 @@ function Directorios() {
           dispositivo.
         </li>
         <li>
-          <strong>Sistema básico de archivos:</strong> accede a bloques físicos de
-          disco.
+          <strong>Sistema básico de archivos:</strong> accede a bloques físicos
+          de disco.
         </li>
         <li>
           <strong>Organización de archivos:</strong> mapea bloques lógicos a
@@ -44,8 +45,8 @@ function Directorios() {
           jerárquica.
         </li>
         <li>
-          <strong>Grafo:</strong> permite enlaces simbólicos o duros para compartir
-          archivos.
+          <strong>Grafo:</strong> permite enlaces simbólicos o duros para
+          compartir archivos.
         </li>
       </ul>
       <h2>Rutas y directorio de trabajo</h2>
@@ -57,8 +58,8 @@ function Directorios() {
       <div className="exercise">
         <p>
           ¿Qué diferencia hay entre un enlace simbólico y un enlace duro?
-          Respuesta: El enlace simbólico apunta a una ruta; el enlace duro apunta
-          directamente al mismo inodo.
+          Respuesta: El enlace simbólico apunta a una ruta; el enlace duro
+          apunta directamente al mismo inodo.
         </p>
       </div>
       <h3>Ejercicio Práctico</h3>
@@ -68,6 +69,8 @@ function Directorios() {
           Observa también cómo se almacenan los metadatos de los archivos.
         </p>
       </div>
+      <h2>Simulador</h2>
+      <SimuladorDirectorios />
     </div>
   );
 }
