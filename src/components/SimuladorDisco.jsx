@@ -44,7 +44,7 @@ function SimuladorDisco() {
 
   const comunicarseConPython = async (payload) => {
     try {
-      const respuesta = await fetch(`${backendUrl}/simular/disco`, {
+      const respuesta = await fetch(`${backendURL}/simular/disco`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
