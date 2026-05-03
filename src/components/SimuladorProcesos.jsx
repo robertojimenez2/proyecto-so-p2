@@ -19,7 +19,7 @@ function SimuladorOS() {
     setNuevoProceso({ ...nuevoProceso, [e.target.name]: e.target.value });
   };
 
-  const backendUrl = "https://proyecto-so-p2.onrender.com";
+  const backendUrl = process.env.REACT_APP_BACKEND_URL;
 
   const agregarProceso = (e) => {
     e.preventDefault();

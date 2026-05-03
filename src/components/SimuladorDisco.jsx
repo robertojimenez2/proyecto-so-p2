@@ -15,7 +15,7 @@ function SimuladorDisco() {
   const [mensaje, setMensaje] = useState("Disco formateado y listo.");
   const [esError, setEsError] = useState(false);
 
-  const backendURL = "https://proyecto-so-p2.onrender.com";
+  const backendURL = process.env.REACT_APP_BACKEND_URL;
 
   const [nuevoArchivo, setNuevoArchivo] = useState({
     id: "",

@@ -6,7 +6,7 @@ function SimuladorDeadlock() {
     esperando: { T1: null, T2: null },
   };
 
-  const backendURL = "https://proyecto-so-p2.onrender.com";
+  const backendURL = process.env.REACT_APP_BACKEND_URL;
 
   const [estado, setEstado] = useState(estadoInicial);
   const [deadlock, setDeadlock] = useState(false);

@@ -13,7 +13,7 @@ function SimuladorProdCons() {
   };
 
   const [estado, setEstado] = useState(estadoInicial);
-  const backendUrl = "https://proyecto-so-p2.onrender.com";
+  const backendUrl = process.env.REACT_APP_BACKEND_URL;
 
   const enviarAccion = async (tipoAccion) => {
     try {
