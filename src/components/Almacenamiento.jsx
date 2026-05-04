@@ -2025,14 +2025,7 @@ const Almacenamiento = () => {
           </div>
         </div>
       </div>
-      <div className="paragraph nav-footer">
-        <p>
-          ↑&nbsp;Subir:&nbsp;
-          <a href="gestión_de_la_memoria.html">Gestión de la memoria</a>&nbsp;|
-          ⌂&nbsp;Inicio:&nbsp;<a href="main.html">Sistemas Operativos</a>&nbsp;|
-          Siguiente:&nbsp;<a href="paginación.html">Paginación</a>&nbsp;→
-        </p>
-      </div>
+      <SimuladorDisco />
     </div>
   );
 };
