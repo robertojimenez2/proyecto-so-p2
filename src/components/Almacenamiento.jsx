@@ -7,28 +7,9 @@ const Almacenamiento = () => {
     <div id="content">
       <div className="sect1">
         <h2 id="memoria_principal">
-          <a className="anchor" href="#memoria_principal"></a>15. Memoria
-          principal
+          <a className="anchor" href="#memoria_principal"></a>Almacenamiento
         </h2>
         <div className="sectionbody">
-          <div className="admonitionblock time">
-            <table>
-              <tbody>
-                <tr>
-                  <td className="icon">
-                    <i className="fa icon-time" title=""></i>
-                  </td>
-                  <td className="content">
-                    <div className="paragraph">
-                      <p>
-                        <strong>Tiempo de lectura:</strong> 32 minutos
-                      </p>
-                    </div>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
           <div className="paragraph">
             <p>
               La memoria es un recurso central para el funcionamiento de un
