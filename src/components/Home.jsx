@@ -61,11 +61,6 @@ function Home() {
           </a>
         </li>
       </ul>
-      <p>
-        Basado en el material oficial de la asignatura, este proyecto ofrece una
-        base clara para estudiar los temas más relevantes de sistemas
-        operativos.
-      </p>
     </div>
   );
 }

@@ -10,7 +10,35 @@ function Hilos() {
         Los hilos son unidades de ejecución dentro de un proceso. Cada hilo
         tiene su propio contador de programa, registros y pila, pero comparte el
         código, los datos y los recursos del proceso.
+        <br />
+        Desde que introducimos el concepto de proceso hemos considerado que es
+        la unidad básica de uso de la CPU. Es decir, que la CPU se asignaba a
+        los procesos, que la usaban para ejecutar sus instrucciones. Sin
+        embargo, en los sistemas operativos multihilo es el hilo la unidad
+        básica de uso de la CPU.
       </p>
+      <img
+        src="https://ull-esit-sistemas-operativos.github.io/ssoo-apuntes/so2324/media/C12-hilos/procesos_multihilo.svg"
+        alt="Hilos"
+      />
+      <p>
+        Esto significa que cada instante, en cada CPU del sistema se puede estar
+        ejecutando un hilo, del mismo o de distintos procesos en el sistema;
+        pero la memoria, los archivos y otros recursos pertenecen al proceso del
+        que cada uno forma parte. Si un hilo reserva memoria o abre un archivo o
+        un dispositivo y no lo libera antes de terminar, el recurso permanecerá
+        reservado, no siendo liberado hasta que lo haga otro hilo o el proceso
+        completo termine. Si un hilo ejecuta una instrucción privilegiada o
+        intenta acceder a una zona de memoria para la que no tiene permiso, la
+        condición de error se propaga a todo el proceso. Por tanto, por lo
+        general, el sistema operativo detendrá el proceso completo del que
+        formaba parte.
+      </p>
+      <h2>Imagen de anatomia de proceso multihilo</h2>
+      <img
+        src="https://ull-esit-sistemas-operativos.github.io/ssoo-apuntes/so2324/media/C12-hilos/proceso_multihilo_en_memoria.svg"
+        alt="multihilo"
+      />
       <h2>Recursos privados y compartidos</h2>
       <p>Un hilo mantiene recursos privados como:</p>
       <ul>
