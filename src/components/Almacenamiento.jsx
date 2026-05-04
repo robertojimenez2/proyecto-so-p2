@@ -1,8 +1,6 @@
 import React from "react";
 import SimuladorDisco from "./SimuladorDisco";
 
-import React from "react";
-
 const Almacenamiento = () => {
   return (
     <div id="content">
