@@ -460,3 +460,73 @@ def simular_directorios(peticion: PeticionFS):
     buscar_y_modificar(arbol_nuevo)
     
     return {"arbol": arbol_nuevo, "mensaje": mensaje, "error": error}
+
+import posixpath # Librería nativa de Python perfecta para matemáticas de rutas
+from pydantic import BaseModel
+from typing import Optional
+
+
+class PeticionTerminal(BaseModel):
+    cwd: str  # Current Working Directory (Carpeta actual)
+    comando: str
+
+@app.post("/simular/terminal")
+def simular_terminal(peticion: PeticionTerminal):
+    cwd = peticion.cwd
+    comando = peticion.comando.strip()
+    
+    # Nuestro "Disco Duro" estático de prueba para la demostración
+    sistema_archivos = {
+        "/": ["home", "etc", "bin"],
+        "/home": ["usuario", "invitado"],
+        "/home/usuario": ["documentos", "imagenes", "leeme.txt"],
+        "/home/usuario/documentos": ["tareas", "sistemas_operativos.pdf"],
+        "/home/usuario/documentos/tareas": [],
+        "/home/usuario/imagenes": ["vacaciones.png", "perrito.jpg"]
+    }
+
+    if not comando:
+        return {"cwd": cwd, "salida": "", "error": False}
+
+    # Separar el comando de los argumentos (ej: "cd" y "../imagenes")
+    partes = comando.split()
+    cmd = partes[0]
+    args = partes[1:] if len(partes) > 1 else []
+
+    if cmd == "pwd":
+        return {"cwd": cwd, "salida": cwd, "error": False}
+    
+    elif cmd == "ls":
+        # Mostrar el contenido de la carpeta actual
+        if cwd in sistema_archivos:
+            contenido = "   ".join(sistema_archivos[cwd])
+            if not contenido: 
+                contenido = "(carpeta vacía)"
+            return {"cwd": cwd, "salida": contenido, "error": False}
+        return {"cwd": cwd, "salida": "Error crítico: Carpeta no encontrada.", "error": True}
+
+    elif cmd == "cd":
+        if not args:
+            return {"cwd": cwd, "salida": "Falta la ruta. Ejemplo: cd .. o cd /home", "error": True}
+        
+        ruta_objetivo = args[0]
+        
+        # EL CEREBRO DE LAS RUTAS: Resolver la matemática
+        if ruta_objetivo.startswith("/"):
+            # Es RUTA ABSOLUTA (Ignora donde estamos parados)
+            nueva_ruta = posixpath.normpath(ruta_objetivo)
+        else:
+            # Es RUTA RELATIVA (Se suma a donde estamos parados)
+            nueva_ruta = posixpath.normpath(posixpath.join(cwd, ruta_objetivo))
+        
+        # Verificar si la nueva ruta existe en nuestro sistema simulado
+        if nueva_ruta in sistema_archivos:
+            return {"cwd": nueva_ruta, "salida": "", "error": False}
+        else:
+            return {"cwd": cwd, "salida": f"cd: {ruta_objetivo}: No existe el directorio", "error": True}
+    
+    elif cmd == "clear":
+        return {"cwd": cwd, "salida": "CLEAR_COMMAND", "error": False}
+        
+    else:
+        return {"cwd": cwd, "salida": f"Comando no reconocido: '{cmd}'. Usa: ls, pwd, cd, clear", "error": True}

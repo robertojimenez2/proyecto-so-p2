@@ -1,5 +1,6 @@
 import React from "react";
 import SimuladorDirectorios from "./SimuladorDir";
+import SimuladorTerminal from "./SimuladorTerminal";
 
 function Directorios() {
   return (
@@ -71,6 +72,8 @@ function Directorios() {
       </div>
       <h2>Simulador</h2>
       <SimuladorDirectorios />
+      <h2>Simulador de terminal</h2>
+      <SimuladorTerminal />
     </div>
   );
 }
