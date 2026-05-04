@@ -12,8 +12,7 @@ function SimuladorTerminal() {
   const [input, setInput] = useState("");
 
   // Asume que estás usando Vite. ¡Cámbialo si usas tu URL directa!
-  const backendUrl =
-    import.meta.env.VITE_BACKEND_URL || "https://TU-URL-DE-RENDER.onrender.com";
+  const backendURL = process.env.REACT_APP_BACKEND_URL;
 
   // Para que la terminal siempre haga scroll hacia abajo
   const terminalFinRef = useRef(null);
